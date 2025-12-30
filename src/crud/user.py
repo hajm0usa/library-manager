@@ -49,6 +49,10 @@ async def get_user_by_id(id: str, db=Depends(get_database)):
 
 async def get_users(skip=0, limit=10, db=Depends(get_database)):
     users_list = await db.users.find().skip(skip).limit(limit).to_list(length=limit)
+
+    for user in users_list:
+        user["_id"] = str(user["_id"])
+
     return users_list
 
 
