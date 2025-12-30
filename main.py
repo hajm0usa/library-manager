@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from src.database import close_mongo_connection, connect_to_mongo
+from src.routes.user import router as user_router
 
 
 async def lifespan(app: FastAPI):
@@ -10,6 +11,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(user_router)
 
 
 @app.get("/")
