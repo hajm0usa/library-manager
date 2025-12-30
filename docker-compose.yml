@@ -1,0 +1,23 @@
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+    - MONGO_INITDB_DATABASE=${MONGO_DB_NAME}
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app:Z
+    environment:
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+
+volumes:
+  mongodb_data:
