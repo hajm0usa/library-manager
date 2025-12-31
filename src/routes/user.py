@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.crud.user import (check_username_exists, create_user, delete_user,
-                      get_user_by_id, get_user_by_username, update_user)
+                           get_user_by_id, get_user_by_username, update_user)
 from src.database import get_database
 from src.models.user import UserCreate, UserResponse, UserUpdate
 
