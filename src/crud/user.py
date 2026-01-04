@@ -4,7 +4,6 @@ from bson import ObjectId
 from fastapi import Depends
 
 from src.database import get_database
-from src.hash import hash_password
 from src.models.user import UserCreate, UserUpdate
 
 
@@ -15,9 +14,9 @@ async def check_username_exists(username: str, db=Depends(get_database)):
     return False
 
 
-async def create_user(user: UserCreate, db=Depends(get_database)):
+async def create_user(user: UserCreate, hashed_password: str, db=Depends(get_database)):
     user_dict = user.model_dump()
-    user_dict["password"] = hash_password(user_dict["password"])
+    user_dict["password"] = hashed_password
     user_dict["created_at"] = datetime.now()
 
     result = await db.users.insert_one(user_dict)

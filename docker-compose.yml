@@ -18,6 +18,7 @@ services:
       - .:/app:Z
     environment:
       - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - SECRET_KEY=${SECRET_KEY}
 
 volumes:
   mongodb_data:

@@ -2,6 +2,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from src.auth import get_current_user
 from src.crud.book import (create_book, delete_book, get_book_by_id, get_books,
                            search_book, update_book)
 from src.database import get_database
@@ -34,7 +35,9 @@ async def book_list_route(skip=0, limit=10, db=Depends(get_database)):
 
 
 @router.post("/", response_model=BookResponse)
-async def book_create_route(book: BookCreate, db=Depends(get_database)):
+async def book_create_route(
+    book: BookCreate, user_data=Depends(get_current_user), db=Depends(get_database)
+):
     unique = search_book(title=book.title, author=book.author, db=db)
     if not unique:
         raise HTTPException(
@@ -46,7 +49,12 @@ async def book_create_route(book: BookCreate, db=Depends(get_database)):
 
 
 @router.put("/book/{id}", response_model=BookResponse)
-async def book_update_route(id: str, book: BookUpdate, db=Depends(get_database)):
+async def book_update_route(
+    id: str,
+    book: BookUpdate,
+    user_data=Depends(get_current_user),
+    db=Depends(get_database),
+):
     old_book = await get_book_by_id(id, db)
     if not old_book:
         raise HTTPException(
@@ -82,7 +90,9 @@ async def book_update_route(id: str, book: BookUpdate, db=Depends(get_database))
 
 
 @router.delete("/book/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def book_delete_route(id: str, db=Depends(get_database)):
+async def book_delete_route(
+    id: str, user_data=Depends(get_current_user), db=Depends(get_database)
+):
     deleted_book = await delete_book(id, db)
     if not deleted_book:
         raise HTTPException(
