@@ -36,6 +36,7 @@ async def login(login_data: OAuth2PasswordRequestForm = Depends(), db=Depends(ge
     access_token = create_access_token(
         data = {
             "sub": user.username,
+            "role": user.role
         }
     )
 
