@@ -2,7 +2,6 @@ from datetime import datetime
 
 from bson import ObjectId
 
-from src.database import get_database
 from src.models.user import UserCreate, UserUpdate
 
 

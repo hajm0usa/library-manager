@@ -2,7 +2,6 @@ from typing import Optional
 
 from bson import ObjectId
 
-from src.database import get_database
 from src.models.book import BookCreate, BookUpdate
 
 

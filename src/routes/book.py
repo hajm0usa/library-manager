@@ -48,7 +48,10 @@ async def book_create_route(
             )
         book = await create_book(book, db)
         return book
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admins and librarians can add books")
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Only admins and librarians can add books",
+    )
 
 
 @router.put("/book/{id}", response_model=BookResponse)
@@ -91,7 +94,10 @@ async def book_update_route(
 
         new_book = await update_book(id, book, db)
         return new_book
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admins and librarians can edit books")
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Only admins and librarians can edit books",
+    )
 
 
 @router.delete("/book/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -104,4 +110,7 @@ async def book_delete_route(
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Book not found"
             )
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admins and librarians can delete books")
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Only admins and librarians can delete books",
+    )
