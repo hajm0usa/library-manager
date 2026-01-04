@@ -1,13 +1,12 @@
 from typing import Optional
 
 from bson import ObjectId
-from fastapi import Depends
 
 from src.database import get_database
 from src.models.book import BookCreate, BookUpdate
 
 
-async def get_book_by_id(id: str, db=Depends(get_database)):
+async def get_book_by_id(id: str, db):
     book = await db.books.find_one({"_id": ObjectId(id)})
 
     if not book:
@@ -18,10 +17,10 @@ async def get_book_by_id(id: str, db=Depends(get_database)):
 
 
 async def search_book(
+    db,
     title: Optional[str] = None,
     author: Optional[str] = None,
     category: Optional[str] = None,
-    db=Depends(get_database),
 ):
 
     search_query = []
@@ -43,7 +42,7 @@ async def search_book(
     return search_result
 
 
-async def get_books(skip=0, limit=10, db=Depends(get_database)):
+async def get_books(db, skip=0, limit=10):
     books = await db.books.find().skip(skip).limit(limit).to_list(length=limit)
 
     for book in books:
@@ -52,7 +51,7 @@ async def get_books(skip=0, limit=10, db=Depends(get_database)):
     return books
 
 
-async def create_book(book: BookCreate, db=Depends(get_database)):
+async def create_book(book: BookCreate, db):
     book_dict = book.model_dump()
 
     result = await db.books.insert_one(book_dict)
@@ -62,7 +61,7 @@ async def create_book(book: BookCreate, db=Depends(get_database)):
     return created_book
 
 
-async def update_book(id: str, book: BookUpdate, db=Depends(get_database)):
+async def update_book(id: str, book: BookUpdate, db):
     updated_data = {k: v for k, v in book.model_dump().items() if v is not None}
 
     if updated_data:
@@ -74,7 +73,7 @@ async def update_book(id: str, book: BookUpdate, db=Depends(get_database)):
     return updated_book
 
 
-async def delete_book(id: str, db=Depends(get_database)):
+async def delete_book(id: str, db):
     result = await db.books.delete_one({"_id": ObjectId(id)})
 
     if result.deleted_count == 0:

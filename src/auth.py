@@ -4,7 +4,7 @@ from typing import Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import (HTTPAuthorizationCredentials, HTTPBearer,
-                              OAuth2PasswordBearer)
+                              )
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
@@ -17,7 +17,7 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-security = OAuth2PasswordBearer(tokenUrl="token")
+security = HTTPBearer()
 
 
 class UserInDB(UserBase):
@@ -58,7 +58,7 @@ async def authenticate_user(username: str, password: str, db):
 
 def create_access_token(data: dict, expire_delta: Optional[datetime] = None):
     expire = datetime.now(timezone.utc) + (expire_delta or timedelta(minutes=15))
-    data.update({"exp": str(expire)})
+    data.update({"exp": int(expire.timestamp())})
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 
@@ -72,9 +72,11 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
+    token = credentials.credentials
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return payload
     try:
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print(payload)
         username = payload.get("sub")
         if not username:
             raise credentials_exception

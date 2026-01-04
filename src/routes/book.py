@@ -24,13 +24,13 @@ async def book_search_route(
     category: Optional[str] = None,
     db=Depends(get_database),
 ):
-    books = await search_book(title, author, category, db)
+    books = await search_book(db, title, author, category)
     return books
 
 
 @router.get("/list", response_model=list[BookResponse])
 async def book_list_route(skip=0, limit=10, db=Depends(get_database)):
-    books = await get_books(skip, limit, db)
+    books = await get_books(db, skip, limit)
     return books
 
 
@@ -78,7 +78,7 @@ async def book_update_route(
             detail="Total count of books cannot be less than availabe count",
         )
 
-    unique = await search_book(book.title, book.author, book.category, db)
+    unique = await search_book(db, book.title, book.author, book.category)
     if not unique:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -1,20 +1,19 @@
 from datetime import datetime
 
 from bson import ObjectId
-from fastapi import Depends
 
 from src.database import get_database
 from src.models.user import UserCreate, UserUpdate
 
 
-async def check_username_exists(username: str, db=Depends(get_database)):
-    user = db.users.find_one({"username": username})
+async def check_username_exists(username: str, db):
+    user = await db.users.find_one({"username": username})
     if user:
         return True
     return False
 
 
-async def create_user(user: UserCreate, hashed_password: str, db=Depends(get_database)):
+async def create_user(user: UserCreate, hashed_password: str, db):
     user_dict = user.model_dump()
     user_dict["password"] = hashed_password
     user_dict["created_at"] = datetime.now()
@@ -26,7 +25,7 @@ async def create_user(user: UserCreate, hashed_password: str, db=Depends(get_dat
     return created_user
 
 
-async def get_user_by_username(username: str, db=Depends(get_database)):
+async def get_user_by_username(username: str, db):
     user = await db.users.find_one({"username": username})
 
     if not user:
@@ -36,7 +35,7 @@ async def get_user_by_username(username: str, db=Depends(get_database)):
     return user
 
 
-async def get_user_by_id(id: str, db=Depends(get_database)):
+async def get_user_by_id(id: str, db):
     user = await db.users.find_one({"_id": ObjectId(id)})
 
     if not user:
@@ -46,7 +45,7 @@ async def get_user_by_id(id: str, db=Depends(get_database)):
     return user
 
 
-async def get_users(skip=0, limit=10, db=Depends(get_database)):
+async def get_users(db, skip=0, limit=10):
     users_list = await db.users.find().skip(skip).limit(limit).to_list(length=limit)
 
     for user in users_list:
@@ -55,7 +54,7 @@ async def get_users(skip=0, limit=10, db=Depends(get_database)):
     return users_list
 
 
-async def update_user(id: str, user_update: UserUpdate, db=Depends(get_database)):
+async def update_user(id: str, user_update: UserUpdate, db):
     updated_data = {k: v for k, v in user_update.model_dump().items() if v is not None}
 
     if updated_data:
@@ -67,7 +66,7 @@ async def update_user(id: str, user_update: UserUpdate, db=Depends(get_database)
     return updated_user
 
 
-async def delete_user(username: str, db=Depends(get_database)) -> bool:
+async def delete_user(username: str, db) -> bool:
     result = await db.users.delete_one({"username": username})
     if result.deleted_count == 0:
         return False
