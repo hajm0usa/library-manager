@@ -44,7 +44,7 @@ async def get_user_by_id(id: str, db):
     return user
 
 
-async def get_users(db, skip=0, limit=10):
+async def get_users(db, skip: int, limit: int):
     users_list = await db.users.find().skip(skip).limit(limit).to_list(length=limit)
 
     for user in users_list:

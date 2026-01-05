@@ -41,7 +41,7 @@ async def search_book(
     return search_result
 
 
-async def get_books(db, skip=0, limit=10):
+async def get_books(db, skip: int, limit: int):
     books = await db.books.find().skip(skip).limit(limit).to_list(length=limit)
 
     for book in books:

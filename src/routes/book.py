@@ -30,7 +30,7 @@ async def book_search_route(
 
 
 @router.get("/list", response_model=List[BookResponse])
-async def book_list_route(skip=0, limit=10, db=Depends(get_database)):
+async def book_list_route(skip: int = 0, limit: int = 10, db=Depends(get_database)):
     books = await get_books(db, skip, limit)
     return books
 
