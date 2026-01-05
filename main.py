@@ -5,6 +5,7 @@ from src.auth import Token, authenticate_user, create_access_token
 from src.database import close_mongo_connection, connect_to_mongo, get_database
 from src.routes.book import router as book_router
 from src.routes.user import router as user_router
+from src.routes.loan import router as loan_router
 
 
 async def lifespan(app: FastAPI):
@@ -17,6 +18,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(book_router)
 app.include_router(user_router)
+app.include_router(loan_router)
 
 @app.get("/")
 def home():

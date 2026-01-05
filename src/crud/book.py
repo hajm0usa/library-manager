@@ -15,6 +15,14 @@ async def get_book_by_id(id: str, db):
     return book
 
 
+async def get_book_by_title(title: str, db):
+    book = await db.books.find_one({"title": title})
+
+    if not book:
+        return None
+    return book
+
+
 async def search_book(
     db,
     skip: int,
@@ -44,6 +52,7 @@ async def search_book(
         book["_id"] = str(book.pop("_id"))
 
     return search_result
+
 
 async def check_book_uniqueness(title: str, author: str, db):
     existing = await db.books.find_one({"title": title, "author": author})
