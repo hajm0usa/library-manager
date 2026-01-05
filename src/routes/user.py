@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List
 
 from src.auth import get_current_user, hash_password
 from src.crud.user import (check_username_exists, create_user, delete_user,
-                           get_user_by_id, get_user_by_username, update_user)
+                           get_user_by_id, get_user_by_username, get_users, update_user)
 from src.database import get_database
 from src.models.user import Role, UserCreate, UserResponse, UserUpdate
 
@@ -13,7 +14,7 @@ router = APIRouter(prefix="/user", tags=["user"])
 async def user_create_route(
     user: UserCreate, user_data=Depends(get_current_user), db=Depends(get_database)
 ):
-    if user_data["role"] == Role.ADMIN:
+    if Role(user_data["role"]) == Role.ADMIN:
         existing_username = await check_username_exists(user.username, db)
         if existing_username:
             raise HTTPException(
@@ -58,7 +59,7 @@ async def user_update_route(
     user_data=Depends(get_current_user),
     db=Depends(get_database),
 ):
-    if user_data["role"] == Role.ADMIN or id == user_data["id"]:
+    if Role(user_data["role"]) == Role.ADMIN or id == user_data["id"]:
         if user.username:
             existing_username = await check_username_exists(user.username, db)
             if existing_username:
@@ -77,7 +78,7 @@ async def user_update_route(
 async def user_delete_route(
     username: str, user_data=Depends(get_current_user), db=Depends(get_database)
 ):
-    if user_data["role"] == Role.ADMIN or id == user_data["id"]:
+    if Role(user_data["role"]) == Role.ADMIN or id == user_data["id"]:
         deleted_user = await delete_user(username, db)
         if not deleted_user:
             raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")

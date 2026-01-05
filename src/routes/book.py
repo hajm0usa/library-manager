@@ -41,7 +41,7 @@ async def book_list_route(skip: int = 0, limit: int = 10, db=Depends(get_databas
 async def book_create_route(
     book: BookCreate, user_data=Depends(get_current_user), db=Depends(get_database)
 ):
-    if user_data["role"] in [Role.ADMIN, Role.LIBRARIAN]:
+    if Role(user_data["role"]) in [Role.ADMIN, Role.LIBRARIAN]:
         unique = search_book(title=book.title, author=book.author, db=db)
         if not unique:
             raise HTTPException(
@@ -63,7 +63,7 @@ async def book_update_route(
     user_data=Depends(get_current_user),
     db=Depends(get_database),
 ):
-    if user_data["role"] in [Role.ADMIN, Role.LIBRARIAN]:
+    if Role(user_data["role"]) in [Role.ADMIN, Role.LIBRARIAN]:
         old_book = await get_book_by_id(id, db)
         if not old_book:
             raise HTTPException(
@@ -106,7 +106,7 @@ async def book_update_route(
 async def book_delete_route(
     id: str, user_data=Depends(get_current_user), db=Depends(get_database)
 ):
-    if user_data["role"] in [Role.ADMIN, Role.LIBRARIAN]:
+    if Role(user_data["role"]) in [Role.ADMIN, Role.LIBRARIAN]:
         deleted_book = await delete_book(id, db)
         if not deleted_book:
             raise HTTPException(
