@@ -29,7 +29,9 @@ async def user_create_route(
 
 
 @router.get("/id/{user_id}", response_model=UserResponse)
-async def user_get_by_id_route(id: str, db=Depends(get_database)):
+async def user_get_by_id_route(id: str, user_data=Depends(get_current_user), db=Depends(get_database)):
+    if Role(user_data["role"]) not in [Role.ADMIN, Role.LIBRARIAN]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't see users as a member")
     user = await get_user_by_id(id, db)
     if user:
         return user
@@ -37,7 +39,9 @@ async def user_get_by_id_route(id: str, db=Depends(get_database)):
 
 
 @router.get("/username/{username}", response_model=UserResponse)
-async def user_get_by_username(username: str, db=Depends(get_database)):
+async def user_get_by_username(username: str, user_data=Depends(get_current_user), db=Depends(get_database)):
+    if Role(user_data["role"]) not in [Role.ADMIN, Role.LIBRARIAN]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't see users as a member")
     user = await get_user_by_username(username, db)
     if user:
         return user
