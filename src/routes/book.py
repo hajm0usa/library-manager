@@ -23,9 +23,11 @@ async def book_search_route(
     title: Optional[str] = None,
     author: Optional[str] = None,
     category: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 10,
     db=Depends(get_database),
 ):
-    books = await search_book(db, title, author, category)
+    books = await search_book(db, skip, limit, title, author, category)
     return books
 
 

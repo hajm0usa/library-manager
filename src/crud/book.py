@@ -17,6 +17,8 @@ async def get_book_by_id(id: str, db):
 
 async def search_book(
     db,
+    skip: int,
+    limit: int,
     title: Optional[str] = None,
     author: Optional[str] = None,
     category: Optional[str] = None,
@@ -31,9 +33,7 @@ async def search_book(
     if category:
         search_query.append({"category": {"$regex": category, "$options": "i"}})
 
-    search_result = await db.books.find({"$or": search_query}).to_list(length=20)
-
-    print(search_result)
+    search_result = await db.books.find({"$or": search_query}).skip(skip).limit(limit).to_list(length=limit)
 
     for book in search_result:
         book["_id"] = str(book.pop("_id"))
