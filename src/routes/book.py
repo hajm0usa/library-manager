@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -12,13 +12,13 @@ from src.models.user import Role
 router = APIRouter(prefix="/book", tags=["book"])
 
 
-@router.get("/book/{id}", response_model=list[BookResponse])
+@router.get("/book/{id}", response_model=List[BookResponse])
 async def book_get_by_id_route(id: str, db=Depends(get_database)):
     book = await get_book_by_id(id, db)
     return book
 
 
-@router.get("/search")
+@router.get("/search", response_model=List[BookResponse])
 async def book_search_route(
     title: Optional[str] = None,
     author: Optional[str] = None,
@@ -29,7 +29,7 @@ async def book_search_route(
     return books
 
 
-@router.get("/list", response_model=list[BookResponse])
+@router.get("/list", response_model=List[BookResponse])
 async def book_list_route(skip=0, limit=10, db=Depends(get_database)):
     books = await get_books(db, skip, limit)
     return books
