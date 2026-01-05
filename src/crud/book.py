@@ -33,7 +33,12 @@ async def search_book(
     if category:
         search_query.append({"category": {"$regex": category, "$options": "i"}})
 
-    search_result = await db.books.find({"$or": search_query}).skip(skip).limit(limit).to_list(length=limit)
+    search_result = (
+        await db.books.find({"$or": search_query})
+        .skip(skip)
+        .limit(limit)
+        .to_list(length=limit)
+    )
 
     for book in search_result:
         book["_id"] = str(book.pop("_id"))
@@ -41,10 +46,7 @@ async def search_book(
     return search_result
 
 async def check_book_uniqueness(title: str, author: str, db):
-    existing = await db.books.find_one({
-        "title": title,
-        "author": author
-    })
+    existing = await db.books.find_one({"title": title, "author": author})
 
     if not existing:
         return True

@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.auth import get_current_user, hash_password
 from src.crud.user import (check_username_exists, create_user, delete_user,
-                           get_user_by_id, get_user_by_username, get_users, update_user)
+                           get_user_by_id, get_user_by_username, get_users,
+                           update_user)
 from src.database import get_database
 from src.models.user import Role, UserCreate, UserResponse, UserUpdate
 
@@ -29,9 +31,14 @@ async def user_create_route(
 
 
 @router.get("/id/{user_id}", response_model=UserResponse)
-async def user_get_by_id_route(id: str, user_data=Depends(get_current_user), db=Depends(get_database)):
+async def user_get_by_id_route(
+    id: str, user_data=Depends(get_current_user), db=Depends(get_database)
+):
     if Role(user_data["role"]) not in [Role.ADMIN, Role.LIBRARIAN]:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't see users as a member")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't see users as a member",
+        )
     user = await get_user_by_id(id, db)
     if user:
         return user
@@ -39,18 +46,32 @@ async def user_get_by_id_route(id: str, user_data=Depends(get_current_user), db=
 
 
 @router.get("/username/{username}", response_model=UserResponse)
-async def user_get_by_username(username: str, user_data=Depends(get_current_user), db=Depends(get_database)):
+async def user_get_by_username(
+    username: str, user_data=Depends(get_current_user), db=Depends(get_database)
+):
     if Role(user_data["role"]) not in [Role.ADMIN, Role.LIBRARIAN]:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't see users as a member")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't see users as a member",
+        )
     user = await get_user_by_username(username, db)
     if user:
         return user
     raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
 
+
 @router.get("/list", response_model=List[UserResponse])
-async def user_list_route(skip: int = 0, limit: int = 10, user_data=Depends(get_current_user), db=Depends(get_database)):
+async def user_list_route(
+    skip: int = 0,
+    limit: int = 10,
+    user_data=Depends(get_current_user),
+    db=Depends(get_database),
+):
     if Role(user_data["role"]) not in [Role.ADMIN, Role.LIBRARIAN]:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't see list of users as a member")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can't see list of users as a member",
+        )
 
     users_list = await get_users(db, skip, limit)
     return users_list
