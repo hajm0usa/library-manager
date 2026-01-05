@@ -3,8 +3,8 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.auth import get_current_user
-from src.crud.book import (check_book_uniqueness, create_book, delete_book, get_book_by_id, get_books,
-                           search_book, update_book)
+from src.crud.book import (check_book_uniqueness, create_book, delete_book,
+                           get_book_by_id, get_books, search_book, update_book)
 from src.database import get_database
 from src.models.book import BookCreate, BookResponse, BookUpdate
 from src.models.user import Role
@@ -85,6 +85,15 @@ async def book_update_route(
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Total count of books cannot be less than availabe count",
+            )
+
+        existings = await search_book(
+            db, skip=0, limit=2, title=book.title, author=book.author
+        )
+        if len(existings) == 2:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Book with this fields already exists",
             )
 
         new_book = await update_book(id, book, db)
