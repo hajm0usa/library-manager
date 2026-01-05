@@ -40,6 +40,16 @@ async def search_book(
 
     return search_result
 
+async def check_book_uniqueness(title: str, author: str, db):
+    existing = await db.books.find_one({
+        "title": title,
+        "author": author
+    })
+
+    if not existing:
+        return True
+    return False
+
 
 async def get_books(db, skip: int, limit: int):
     books = await db.books.find().skip(skip).limit(limit).to_list(length=limit)
