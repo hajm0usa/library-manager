@@ -42,6 +42,14 @@ async def user_get_by_username(username: str, db=Depends(get_database)):
         return user
     raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
 
+@router.get("/list", response_model=List[UserResponse])
+async def user_list_route(skip: int = 0, limit: int = 10, user_data=Depends(get_current_user), db=Depends(get_database)):
+    if Role(user_data["role"]) not in [Role.ADMIN, Role.LIBRARIAN]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't see list of users as a member")
+
+    users_list = await get_users(db, skip, limit)
+    return users_list
+
 
 @router.put("/{username}", response_model=UserResponse)
 async def user_update_route(
