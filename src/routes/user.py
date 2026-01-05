@@ -35,7 +35,7 @@ async def user_get_by_id_route(id: str, db=Depends(get_database)):
     raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
 
 
-@router.get("/{username}", response_model=UserResponse)
+@router.get("/username/{username}", response_model=UserResponse)
 async def user_get_by_username(username: str, db=Depends(get_database)):
     user = await get_user_by_username(username, db)
     if user:
