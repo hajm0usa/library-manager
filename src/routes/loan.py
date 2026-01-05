@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -156,10 +156,11 @@ async def loan_list_route(
     user_data=Depends(get_current_user),
     skip: int = 0,
     limit: int = 10,
+    loan_status: Optional[LoanStatus] = None,
     db=Depends(get_database),
 ):
     if Role(user_data["role"]) in [Role.ADMIN, Role.LIBRARIAN]:
-        return await get_loans(db, skip, limit)
+        return await get_loans(db, skip, limit, status=loan_status)
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
         detail="You can't see loans list as a member",

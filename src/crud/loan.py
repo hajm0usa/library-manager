@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
+from typing import Optional
 
 from bson import ObjectId
 
-from src.models.loan import LoanCreate, LoanUpdate
+from src.models.loan import LoanCreate, LoanStatus, LoanUpdate
 
 
 async def create_loan(loan: LoanCreate, db):
@@ -29,8 +30,11 @@ async def get_loan(id: str, db):
     return loan
 
 
-async def get_loans(db, skip: int, limit: int):
-    loans = await db.loans.find().skip(skip).limit(limit).to_list(length=limit)
+async def get_loans(db, skip: int, limit: int, status: Optional[LoanStatus] = None):
+    if status:
+        loans = await db.loans.find({"status": status.value}).skip(skip).limit(limit).to_list(length=limit)
+    else:
+        loans = await db.loans.find().skip(skip).limit(limit).to_list(length=limit)
 
     for loan in loans:
         loan["_id"] = str(loan["_id"])
