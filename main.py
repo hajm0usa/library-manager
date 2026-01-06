@@ -27,7 +27,7 @@ app.include_router(loan_renewal_router)
 
 @app.get("/")
 def home():
-    return "Project started successfuly"
+    return "The system is healthy and running!"
 
 
 @app.post("/token", response_model=Token, tags=["Authentication"])
