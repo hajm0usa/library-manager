@@ -1,5 +1,7 @@
 # Library Management API
 
+https://github.com/hajm0usa/library-manager
+
 A small REST API for managing library books, users and loans built with FastAPI and MongoDB.
 
 **Key features:**
