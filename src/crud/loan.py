@@ -32,7 +32,12 @@ async def get_loan(id: str, db):
 
 async def get_loans(db, skip: int, limit: int, status: Optional[LoanStatus] = None):
     if status:
-        loans = await db.loans.find({"status": status.value}).skip(skip).limit(limit).to_list(length=limit)
+        loans = (
+            await db.loans.find({"status": status.value})
+            .skip(skip)
+            .limit(limit)
+            .to_list(length=limit)
+        )
     else:
         loans = await db.loans.find().skip(skip).limit(limit).to_list(length=limit)
 

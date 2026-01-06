@@ -3,7 +3,7 @@ from typing import Optional
 
 from bson import ObjectId
 
-from src.models.loan_return import LoanReturnCreate, LibrarianStatus
+from src.models.loan_return import LibrarianStatus, LoanReturnCreate
 
 
 async def create_loan_return(
