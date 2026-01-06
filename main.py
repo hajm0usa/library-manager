@@ -1,7 +1,7 @@
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from src.auth import Token, authenticate_user, create_access_token
+from src.auth import Token, authenticate_user, create_access_token, ensure_admin_user
 from src.database import close_mongo_connection, connect_to_mongo, get_database
 from src.routes.book import router as book_router
 from src.routes.loan import router as loan_router
@@ -12,6 +12,8 @@ from src.routes.user import router as user_router
 
 async def lifespan(app: FastAPI):
     await connect_to_mongo()
+    db = await get_database()
+    await ensure_admin_user(db)
     yield
     await close_mongo_connection()
 

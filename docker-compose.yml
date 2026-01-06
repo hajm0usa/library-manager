@@ -19,6 +19,8 @@ services:
     environment:
       - MONGO_DB_NAME=${MONGO_DB_NAME}
       - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
 
 volumes:
   mongodb_data:

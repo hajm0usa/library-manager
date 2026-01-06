@@ -31,6 +31,10 @@ MONGO_URI=mongodb://localhost:27017/library
 
 # JWT secret
 SECRET_KEY=your-secret-key
+
+# Admin user credentials
+ADMIN_USERNAME=your-admin-username
+ADMIN_PASSWORD=your-admin-passowrd
 ```
 
 3. Run the app with Uvicorn:

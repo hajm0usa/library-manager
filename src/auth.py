@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 from src.crud.user import get_user_by_username
 from src.database import get_database
-from src.models.user import UserBase
+from src.models.user import Role, UserBase
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"
@@ -73,9 +73,7 @@ async def get_current_user(
 
     token = credentials.credentials
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    return payload
     try:
-        print(payload)
         username = payload.get("sub")
         if not username:
             raise credentials_exception
@@ -86,3 +84,26 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
     return UserBase(**user.model_dump())
+
+
+async def ensure_admin_user(db):
+    admin_username = os.environ["ADMIN_USERNAME"]
+    admin_password = os.environ["ADMIN_PASSWORD"]
+
+    user = await get_user_by_username(admin_username, db)
+    if not user:
+        from src.crud.user import create_user
+        from src.models.user import UserCreate
+
+        hashed_password = hash_password(admin_password)
+        await create_user(
+            user=UserCreate(
+                username=admin_username, password= admin_password,role=Role.ADMIN
+            ),
+            hashed_password=hashed_password,
+            db=db,
+        )
+        return
+
+    if Role(user["role"]) != Role.ADMIN:
+        print("Warning: The existing admin user does not have the 'admin' role.")
