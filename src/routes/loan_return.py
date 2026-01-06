@@ -167,7 +167,12 @@ async def loan_return_list_route(
 async def loan_return_delete_route(
     id: str, user_data=Depends(get_current_user), db=Depends(get_database)
 ):
-    if Role(user_data["role"]) in [Role.ADMIN, Role.LIBRARIAN]:
+    loan = await get_loan(id, db)
+
+    if not loan:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No such loan renewal exists")
+
+    if Role(user_data["role"]) in [Role.ADMIN, Role.LIBRARIAN] or user_data["sub"] == loan["username"]:
         deleted_loan_return = await delete_loan_return(id, db)
 
         if not deleted_loan_return:
