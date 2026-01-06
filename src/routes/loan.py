@@ -90,9 +90,9 @@ async def loan_create_route(
             )
 
     existing = await existing_loan(loan["username"], loan["book_title"], db)
-    if existing:
+    if existing and LoanStatus(existing["status"]) != LoanStatus.RETURNED:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="This loan already exists"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="You already loaned this book"
         )
 
     book = await get_book_by_title(loan["book_title"], db)
