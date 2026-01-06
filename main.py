@@ -7,6 +7,7 @@ from src.routes.book import router as book_router
 from src.routes.user import router as user_router
 from src.routes.loan import router as loan_router
 from src.routes.loan_return import router as loan_return_router
+from src.routes.loan_renewal import router as loan_renewal_router
 
 
 async def lifespan(app: FastAPI):
@@ -21,6 +22,7 @@ app.include_router(book_router)
 app.include_router(user_router)
 app.include_router(loan_router)
 app.include_router(loan_return_router)
+app.include_router(loan_renewal_router)
 
 @app.get("/")
 def home():
